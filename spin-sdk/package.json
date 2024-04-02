@@ -1,0 +1,22 @@
+{
+  "name": "spin-sdk",
+  "version": "1.0.0",
+  "description": "",
+  "lib": "dist/index.js",
+  "main": "dist/index.js",
+  "bin": {
+    "j2w": "./bin/j2w.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@bytecodealliance/componentize-js": "^0.8.3",
+    "@bytecodealliance/jco": "^1.1.1",
+    "typescript": "^5.4.3"
+  }
+}

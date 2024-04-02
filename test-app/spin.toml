@@ -1,0 +1,18 @@
+spin_manifest_version = 2
+
+[application]
+name = "test"
+version = "0.1.0"
+authors = ["karthik2804 <karthik.ganeshram@fermyon.com>"]
+description = ""
+
+[[trigger.http]]
+route = "/..."
+component = "test"
+
+[component.test]
+source = "component.wasm"
+allowed_outbound_hosts = ["*://*:*"]
+ai_models = ["llama2-chat"]
+[component.test.build]
+command = "npx webpack && npx j2w dist.js && spin up"
