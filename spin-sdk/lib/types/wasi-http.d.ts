@@ -16,7 +16,7 @@ export declare class headers {
     has: (name: FieldKey) => boolean
     set: (name: FieldKey, value: FieldValue) => void
     delete: (name: FieldKey) => void
-    append: (name: FieldKey, value: FieldKey) => void
+    append: (name: FieldKey, value: FieldValue) => void
     entries: () => [FieldKey, FieldValue][]
     clone: () => headers
 }

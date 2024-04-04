@@ -1,5 +1,7 @@
 // @ts-ignore
 import { ResponseOutparam, Fields, OutgoingResponse, OutgoingBody } from 'wasi:http/types@0.2.0';
+const decoder = new TextDecoder();
+const encoder = new TextEncoder();
 export class SimpleHTTP {
     constructor() {
         this.handle = this.handle.bind(this);
@@ -24,18 +26,24 @@ export class SimpleHTTP {
                 throw (e);
             }
         }
-        console.log(new TextDecoder().decode(body));
         let request_uri = request.pathWithQuery();
         let url = request_uri ? request_uri : "/";
+        let headers = new Headers();
+        request.headers().entries().forEach(([key, value]) => {
+            headers.append(key, decoder.decode(value));
+        });
+        let req = {
+            method: method.tag.toString().toUpperCase(),
+            uri: url,
+            headers: headers,
+            body: body,
+        };
         let res = new ResponseBuilder(response_out);
         try {
-            await this.handleRequest(null, res);
+            await this.handleRequest(req, res);
         }
         catch (e) {
             console.log(e.message);
-        }
-        if (!res.isComplete()) {
-            throw new Error("handleRequest did not return a proper response");
         }
     }
 }
@@ -74,34 +82,33 @@ export class ResponseBuilder {
         }
         return this;
     }
-    send(value) {
+    send(value = new Uint8Array()) {
         if (this.hasSentResponse) {
             throw new Error("Response has already been sent");
         }
-        if (value) {
-            this.write(value);
-            console.log("here iam 223");
-            this.end();
-            console.log("test");
-        }
-        else {
-            this.response = new OutgoingResponse(new Fields());
-            this.responseBody = this.response.body();
-            this.responseStream = this.responseBody.write();
-            this.response.setStatusCode(this.statusCode);
-            ResponseOutparam.set(this.responseOut, { tag: "ok", val: this.response });
-            console.log("here iam");
-            this.end();
-        }
+        // if (value) {
+        this.write(value);
+        this.end();
+        // } else {
+        //     this.response = new OutgoingResponse(new Fields() as headers) as OutgoingResponseType
+        //     this.responseBody = this.response.body()
+        //     this.responseStream = this.responseBody.write()
+        //     this.response.setStatusCode(this.statusCode)
+        //     ResponseOutparam.set(this.responseOut, { tag: "ok", val: this.response })
+        //     this.end()
+        // }
         this.hasSentResponse = true;
-        console.log("this has been set");
     }
     write(value) {
         if (this.hasSentResponse) {
             throw new Error("Response has already been sent");
         }
         if (!this.hasWrittenHeaders) {
-            this.response = new OutgoingResponse(new Fields());
+            let headers = new Fields();
+            this.headers.forEach((value, key) => {
+                headers.append(key, encoder.encode(value));
+            });
+            this.response = new OutgoingResponse(headers);
             this.responseBody = this.response.body();
             this.responseStream = this.responseBody.write();
             this.response.setStatusCode(this.statusCode);
@@ -111,16 +118,14 @@ export class ResponseBuilder {
         writeBytesToOutputStream(value, this.responseStream);
     }
     end() {
+        // The following if seems redundant as the execution of the module
+        // terminates as soon as the response is sent. 
         if (this.hasSentResponse) {
-            console.log("here2 s");
             throw new Error("Response has already been sent");
         }
         // The OutgoingBody here is untyped because I have not figured out how to do that in typescript yet.
         OutgoingBody.finish(this.responseBody, { tag: "none" });
         this.hasSentResponse = true;
-    }
-    isComplete() {
-        return this.hasSentResponse;
     }
 }
 function writeBytesToOutputStream(body, responseStream) {

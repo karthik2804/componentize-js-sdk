@@ -1,8 +1,14 @@
 import { IncomingRequest, OutputStream } from './types/wasi-http';
 export declare class SimpleHTTP {
     constructor();
-    handleRequest(req: any, res: ResponseBuilder): Promise<void>;
+    handleRequest(req: SimpleRequest, res: ResponseBuilder): Promise<void>;
     handle(request: IncomingRequest, response_out: OutputStream): Promise<void>;
+}
+export interface SimpleRequest {
+    method: string;
+    uri: string;
+    headers: Headers;
+    body?: Uint8Array;
 }
 export type BodyInit = BufferSource | URLSearchParams | ReadableStream<Uint8Array> | USVString;
 export type USVString = string | ArrayBuffer | ArrayBufferView;
@@ -24,5 +30,4 @@ export declare class ResponseBuilder {
     send(value?: BodyInit): void;
     write(value: BodyInit): void;
     end(): void;
-    isComplete(): boolean;
 }

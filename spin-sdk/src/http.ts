@@ -2,12 +2,15 @@
 import { ResponseOutparam, Fields, OutgoingResponse, OutgoingBody } from 'wasi:http/types@0.2.0'
 import { headers, IncomingRequest, OutputStream, OutgoingResponse as OutgoingResponseType, OutgoingBody as OutgoingBodyType } from './types/wasi-http'
 
+const decoder = new TextDecoder()
+const encoder = new TextEncoder()
+
 export class SimpleHTTP {
     constructor() {
         this.handle = this.handle.bind(this)
         this.handleRequest = this.handleRequest.bind(this)
     }
-    async handleRequest(req: any, res: ResponseBuilder) {
+    async handleRequest(req: SimpleRequest, res: ResponseBuilder) {
         throw "not implemented"
     }
     async handle(request: IncomingRequest, response_out: OutputStream) {
@@ -28,22 +31,36 @@ export class SimpleHTTP {
             }
         }
 
-
         let request_uri = request.pathWithQuery()
         let url = request_uri ? request_uri : "/"
 
+        let headers = new Headers();
+        request.headers().entries().forEach(([key, value]) => {
+            headers.append(key, decoder.decode(value));
+        });
+
+        let req: SimpleRequest = {
+            method: method.tag.toString().toUpperCase(),
+            uri: url,
+            headers: headers,
+            body: body,
+        }
+
         let res = new ResponseBuilder(response_out)
         try {
-            await this.handleRequest(null, res)
+            await this.handleRequest(req, res)
         }
         catch (e: any) {
             console.log(e.message)
         }
-
-        if (!res.isComplete()) {
-            throw new Error("handleRequest did not return a proper response")
-        }
     }
+}
+
+export interface SimpleRequest {
+    method: string,
+    uri: string,
+    headers: Headers
+    body?: Uint8Array
 }
 
 // FormData and Blob need to be added
@@ -93,21 +110,21 @@ export class ResponseBuilder {
         }
         return this
     }
-    send(value?: BodyInit) {
+    send(value: BodyInit = new Uint8Array()) {
         if (this.hasSentResponse) {
             throw new Error("Response has already been sent")
         }
-        if (value) {
-            this.write(value)
-            this.end()
-        } else {
-            this.response = new OutgoingResponse(new Fields() as headers) as OutgoingResponseType
-            this.responseBody = this.response.body()
-            this.responseStream = this.responseBody.write()
-            this.response.setStatusCode(this.statusCode)
-            ResponseOutparam.set(this.responseOut, { tag: "ok", val: this.response })
-            this.end()
-        }
+        // if (value) {
+        this.write(value)
+        this.end()
+        // } else {
+        //     this.response = new OutgoingResponse(new Fields() as headers) as OutgoingResponseType
+        //     this.responseBody = this.response.body()
+        //     this.responseStream = this.responseBody.write()
+        //     this.response.setStatusCode(this.statusCode)
+        //     ResponseOutparam.set(this.responseOut, { tag: "ok", val: this.response })
+        //     this.end()
+        // }
         this.hasSentResponse = true
     }
     write(value: BodyInit) {
@@ -115,7 +132,11 @@ export class ResponseBuilder {
             throw new Error("Response has already been sent")
         }
         if (!this.hasWrittenHeaders) {
-            this.response = new OutgoingResponse(new Fields() as headers) as OutgoingResponseType
+            let headers = new Fields() as headers;
+            this.headers.forEach((value, key) => {
+                headers.append(key, encoder.encode(value));
+            });
+            this.response = new OutgoingResponse(headers) as OutgoingResponseType
             this.responseBody = this.response.body()
             this.responseStream = this.responseBody.write()
             this.response.setStatusCode(this.statusCode)
@@ -133,9 +154,6 @@ export class ResponseBuilder {
         // The OutgoingBody here is untyped because I have not figured out how to do that in typescript yet.
         OutgoingBody.finish(this.responseBody!, { tag: "none" });
         this.hasSentResponse = true
-    }
-    isComplete() {
-        return this.hasSentResponse
     }
 }
 

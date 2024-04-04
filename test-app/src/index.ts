@@ -1,13 +1,14 @@
 import { SimpleHTTP } from "spin-sdk"
 // import { Llm } from "spin-sdk";
-import { ResponseBuilder } from "spin-sdk/lib/http";
+import { SimpleRequest, ResponseBuilder } from "spin-sdk/lib/http";
 
 class HttpHandler extends SimpleHTTP {
     constructor() {
         super();
     }
-    async handleRequest(req: any, res: ResponseBuilder) {
+    async handleRequest(req: SimpleRequest, res: ResponseBuilder) {
         res.status(200)
+        res.set("abc", "xyz")
         res.send("hello world")
         res.end()
     }
