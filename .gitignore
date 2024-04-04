@@ -2,3 +2,4 @@
 runtime.toml
 node_modules/
 .spin
+dist.js

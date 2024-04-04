@@ -1,15 +1,15 @@
 import { SimpleHTTP } from "spin-sdk"
-import { Llm } from "spin-sdk";
+// import { Llm } from "spin-sdk";
+import { ResponseBuilder } from "spin-sdk/lib/http";
 
 class HttpHandler extends SimpleHTTP {
     constructor() {
         super();
     }
-    async handleRequest() {
-        console.log("hello")
-        let res = Llm.infer(Llm.InferencingModels.Llama2Chat, "tell me a joke")
-        console.log(res)
-        return new TextEncoder().encode("hello world")
+    async handleRequest(req: any, res: ResponseBuilder) {
+        res.status(200)
+        res.send("hello world")
+        res.end()
     }
 }
 

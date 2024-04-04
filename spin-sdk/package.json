@@ -2,14 +2,15 @@
   "name": "spin-sdk",
   "version": "1.0.0",
   "description": "",
-  "lib": "dist/index.js",
-  "main": "dist/index.js",
+  "main": "lib/index.js",
+  "lib": "lib/index.js",
+  "typings": "lib/index.d.ts",
   "bin": {
     "j2w": "./bin/j2w.js"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc"
+    "build": "tsc && cp -r src/types ./lib/"
   },
   "keywords": [],
   "author": "",
