@@ -8,7 +8,7 @@ export class SimpleHTTP {
         this.handleRequest = this.handleRequest.bind(this);
     }
     async handleRequest(req, res) {
-        throw "not implemented";
+        throw new Error("not implemented");
     }
     async handle(request, response_out) {
         let method = request.method();
@@ -86,17 +86,8 @@ export class ResponseBuilder {
         if (this.hasSentResponse) {
             throw new Error("Response has already been sent");
         }
-        // if (value) {
         this.write(value);
         this.end();
-        // } else {
-        //     this.response = new OutgoingResponse(new Fields() as headers) as OutgoingResponseType
-        //     this.responseBody = this.response.body()
-        //     this.responseStream = this.responseBody.write()
-        //     this.response.setStatusCode(this.statusCode)
-        //     ResponseOutparam.set(this.responseOut, { tag: "ok", val: this.response })
-        //     this.end()
-        // }
         this.hasSentResponse = true;
     }
     write(value) {
@@ -118,12 +109,11 @@ export class ResponseBuilder {
         writeBytesToOutputStream(value, this.responseStream);
     }
     end() {
-        // The following if seems redundant as the execution of the module
-        // terminates as soon as the response is sent. 
         if (this.hasSentResponse) {
             throw new Error("Response has already been sent");
         }
         // The OutgoingBody here is untyped because I have not figured out how to do that in typescript yet.
+        this.responseStream?.[Symbol.dispose]();
         OutgoingBody.finish(this.responseBody, { tag: "none" });
         this.hasSentResponse = true;
     }

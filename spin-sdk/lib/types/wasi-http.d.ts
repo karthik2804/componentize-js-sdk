@@ -56,7 +56,7 @@ export interface OutputStream {
     blockingWriteZerosAndFlush: (len: number) => void
     splice: (src: InputStream, len: number) => number
     blockingSplice: (src: InputStream, len: number) => number
-    drop: () => void
+    [Symbol.dispose](): void
 }
 
 export declare class OutgoingBody {

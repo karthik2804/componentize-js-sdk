@@ -13,6 +13,10 @@ component = "test"
 [component.test]
 source = "component.wasm"
 allowed_outbound_hosts = ["*://*:*"]
+key_value_stores = ["default"]
 ai_models = ["llama2-chat"]
+sqlite_databases = ["default"]
+[component.test.variables]
+test = "try"
 [component.test.build]
 command = "npx webpack && npx j2w dist.js && spin up"

@@ -6,6 +6,7 @@ world spin-imports {
   import redis;
   import postgres;
   import mysql;
+  import mqtt;
   import sqlite;
   import key-value;
   import variables;
