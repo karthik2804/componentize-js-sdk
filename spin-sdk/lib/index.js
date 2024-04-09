@@ -7,4 +7,5 @@ import { Sqlite } from './sqlite';
 import { Postgres } from "./postgres";
 import { Mysql } from "./mysql";
 import { Mqtt } from "./mqtt";
-export { SimpleHTTP, Llm, Variables, Redis, KeyValue, Sqlite, Postgres, Mysql, Mqtt };
+import { RedisHandler } from "./inboundRedis";
+export { SimpleHTTP, Llm, Variables, Redis, KeyValue, Sqlite, Postgres, Mysql, Mqtt, RedisHandler };

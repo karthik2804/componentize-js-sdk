@@ -19,5 +19,8 @@
     "@bytecodealliance/componentize-js": "^0.8.3",
     "@bytecodealliance/jco": "^1.1.1",
     "typescript": "^5.4.3"
+  },
+  "dependencies": {
+    "yargs": "^17.7.2"
   }
 }
