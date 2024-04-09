@@ -1,0 +1,20 @@
+spin_manifest_version = 2
+
+[application]
+authors = ["Fermyon Engineering <engineering@fermyon.com>"]
+description = "A redis application."
+name = "spin-redis"
+version = "0.1.0"
+
+[application.trigger.redis]
+address = "redis://localhost:6379"
+
+[[trigger.redis]]
+channel = "messages"
+component = "echo-message"
+
+[component.echo-message]
+source = "component.wasm"
+allowed_outbound_hosts = ["*://*:*"]
+[component.echo-message.build]
+command = "npx webpack && npx j2w -i dist.js -n spin-redis"

@@ -1,4 +1,4 @@
-import { KeyValue, Mqtt, Mysql, Postgres, Redis, SimpleHTTP, Sqlite, Variables } from "spin-sdk"
+import { KeyValue, Mqtt, Mysql, Postgres, Redis, RedisHandler, SimpleHTTP, Sqlite, Variables } from "spin-sdk"
 // import { Llm } from "spin-sdk";
 import { SimpleRequest, ResponseBuilder } from "spin-sdk/lib/http";
 import { QoS } from "spin-sdk/lib/mqtt";
@@ -44,18 +44,13 @@ class HttpHandler extends SimpleHTTP {
 
 export const incomingHandler = new HttpHandler()
 
+//@ts-ignore
+const decoder = new TextDecoder()
 
-// import * as redis from "fermyon:spin/redis@2.0.0"
-// const decoder = new TextDecoder()
+class InBoundRedis implements RedisHandler {
+    handleMessage(msg: Uint8Array): void {
+        console.log("message: ", decoder.decode(msg))
+    }
+}
 
-// export const inboundRedis = {
-//     handleMessage(msg) {
-//         console.log(redis)
-//         let test = redis.Connection.open("redis://localhost:6379")
-//         console.log(decoder.decode(test.get("test")))
-//         // let kv = store.open("default")
-//         // console.log(kv.exists("test"))
-//         console.log(decoder.decode(msg))
-
-//     }
-// }
+export const inboundRedis = new InBoundRedis()

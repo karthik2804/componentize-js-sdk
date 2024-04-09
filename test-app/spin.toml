@@ -19,4 +19,4 @@ sqlite_databases = ["default"]
 [component.test.variables]
 test = "try"
 [component.test.build]
-command = "npx webpack && npx j2w dist.js && spin up"
+command = "npx webpack && npx j2w -i dist.js -n spin-http"
