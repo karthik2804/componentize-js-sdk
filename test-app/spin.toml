@@ -19,7 +19,7 @@ sqlite_databases = ["default"]
 [component.test.variables]
 test = "try"
 [component.test.build]
-command = "npx webpack && npx j2w -i dist.js -n spin-http"
+command = "npx webpack && npx j2w -i dist.js -n spin-http && npx webpack -c webpack.client.js"
 
 [[trigger.http]]
 route = "/static/..."

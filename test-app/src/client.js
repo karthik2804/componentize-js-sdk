@@ -1,3 +1,7 @@
 import { createApp } from './app.js'
+import { initRouter } from './router.js'
 
-createApp().mount('#app')
+let app = createApp()
+let router = initRouter()
+
+app.use(router).mount('#app')

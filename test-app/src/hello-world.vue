@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div v-if="count">
         Hello World from Vue SSR!
     </div>
     <button @click="count++">{{ count }}</button>
