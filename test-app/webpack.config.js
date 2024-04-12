@@ -1,4 +1,7 @@
 const path = require('path');
+const test = require('vue-loader');
+const webpack = require('webpack')
+const VueLoaderPlugin = test.VueLoaderPlugin
 
 module.exports = {
     entry: './src/index.ts',
@@ -12,8 +15,21 @@ module.exports = {
                 use: 'ts-loader',
                 exclude: /node_modules/,
             },
+            {
+                test: /\.vue$/,
+                loader: 'vue-loader',
+            },
         ],
     },
+    plugins: [
+        new VueLoaderPlugin(),
+        // VueJS feature flags for treeshaking - https://github.com/vuejs/vue-next/tree/master/packages/vue#bundler-build-feature-flags
+        new webpack.DefinePlugin({
+            __VUE_OPTIONS_API__: true,
+            __VUE_PROD_DEVTOOLS__: false,
+        }),
+    ],
+
     resolve: {
         extensions: ['.tsx', '.ts', '.js'],
     },
