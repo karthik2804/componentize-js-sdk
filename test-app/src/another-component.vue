@@ -1,5 +1,7 @@
 <template>
-    Another component doing something cool
+    <div>
+        Another component doing something cool
+    </div>
 </template>
 
 
